@@ -14,7 +14,9 @@ remixAuthenticator.use(
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       scope: ["email", "openid", "profile"],
-      callbackURL: `http://${
+      callbackURL: `${
+        process.env.NODE_ENV === "production" ? "https" : "http"
+      }://${
         process.env.NODE_ENV === "production"
           ? "rangavilas.vercel.app"
           : "localhost:3000"
