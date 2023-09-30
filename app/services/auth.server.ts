@@ -14,7 +14,11 @@ remixAuthenticator.use(
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       scope: ["email", "openid", "profile"],
-      callbackURL: `http://localhost:3000/auth/${SocialsProvider.GOOGLE}/callback`,
+      callbackURL: `http://${
+        process.env.NODE_ENV === "production"
+          ? "rangavilas.vercel.app"
+          : "localhost:3000"
+      }/auth/${SocialsProvider.GOOGLE}/callback`,
     },
     handleProfileCreateCallback
   )
