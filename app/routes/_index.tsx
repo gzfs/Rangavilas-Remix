@@ -4,9 +4,8 @@ import {
   json,
 } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { type GoogleProfile } from "remix-auth-socials";
-import Navbar from "~/components/Navbar";
 import Slider from "~/components/Slider";
+import { type User } from "~/database/types";
 import { remixAuthenticator } from "~/services/auth.server";
 
 export const meta: MetaFunction = () => {
@@ -17,10 +16,9 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader(loaderArgs: LoaderFunctionArgs) {
-  const userSession: GoogleProfile =
-    (await remixAuthenticator.isAuthenticated(
-      loaderArgs.request
-    )) as GoogleProfile;
+  const userSession: User = (await remixAuthenticator.isAuthenticated(
+    loaderArgs.request
+  )) as User;
 
   const sliderImages = [
     "https://images.unsplash.com/photo-1685825631222-6bfdc760d39c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1472&q=80",
@@ -40,7 +38,6 @@ export default function Index() {
 
   return (
     <>
-      <Navbar userSession={loaderData.userSession} />
       <Slider
         sliderImages={loaderData.sliderImages}
         isRounded={false}

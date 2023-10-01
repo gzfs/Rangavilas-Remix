@@ -1,11 +1,11 @@
 import { FileMigrationProvider, Migrator } from "kysely";
 import { promises as fs } from "fs";
-import { cockroachDB } from "~/services/db.server";
+import { tursoDB } from "~/services/db.server";
 import path from "path";
 
 async function migrateToLatest() {
   const dbMigrator: Migrator = new Migrator({
-    db: cockroachDB,
+    db: tursoDB,
     provider: new FileMigrationProvider({
       fs,
       path,
@@ -33,7 +33,7 @@ async function migrateToLatest() {
     process.exit(1);
   }
 
-  await cockroachDB.destroy();
+  await tursoDB.destroy();
 }
 
 migrateToLatest();

@@ -7,7 +7,7 @@ export async function loader(loaderArgs: LoaderFunctionArgs) {
     SocialsProvider.GOOGLE,
     loaderArgs.request,
     {
-      successRedirect: "/",
+      successRedirect: "/profile",
       failureRedirect: "/",
     }
   );

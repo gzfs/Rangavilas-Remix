@@ -1,11 +1,12 @@
-import { sql, type Kysely } from "kysely";
+import { type Kysely } from "kysely";
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable("user")
-    .addColumn("id", "uuid", (c) =>
-      c.primaryKey().defaultTo(sql`gen_random_uuid()`)
-    )
+    .addColumn("id", "text", (c) => c.primaryKey())
+    .addColumn("first_name", "text", (c) => c.notNull())
+    .addColumn("last_name", "text")
+    .addColumn("phone", "text")
     .addColumn("email", "text", (c) => c.unique())
     .addColumn("is_admin", "boolean", (c) => c.notNull())
     .addColumn("image", "text")
@@ -13,9 +14,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("address")
-    .addColumn("id", "uuid", (c) =>
-      c.primaryKey().defaultTo(sql`gen_random_uuid()`)
-    )
+    .addColumn("id", "uuid", (c) => c.primaryKey())
     .addColumn("user_id", "uuid", (c) =>
       c.references("user.id").onDelete("cascade").notNull()
     )
