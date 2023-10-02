@@ -29,3 +29,8 @@
 .fade-out {
   animation: fadeOut 1s;
 }
+
+@font-face {
+  font-family: "Veshion";
+  src: url("/assets/fonts/Veshion.ttf");
+}

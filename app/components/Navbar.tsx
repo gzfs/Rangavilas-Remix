@@ -85,21 +85,27 @@ export default function Navbar({
                 "absolute shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] text-[13px] rounded-xl py-2 top-14 bg-white right-0 w-[200px] px-4 fade-in"
               )}
             >
+              {userSession.is_admin ? (
+                <>
+                  <div className="flex items-center py-2 w-full">
+                    <Shield className="w-[18px] mr-2" />
+                    <Link
+                      to="/admin"
+                      className="w-fit"
+                      onClick={() => {
+                        setShowDropdown(false);
+                      }}
+                    >
+                      Admin Dashboard
+                    </Link>
+                  </div>
+                  <hr />{" "}
+                </>
+              ) : (
+                ""
+              )}
               <div className="flex items-center py-2 w-full">
-                <Shield className="w-[18px] mr-2" />
-                <Link
-                  to="/admin"
-                  className="w-fit"
-                  onClick={() => {
-                    setShowDropdown(false);
-                  }}
-                >
-                  Admin Dashboard
-                </Link>
-              </div>
-              <hr />
-              <div className="flex items-center py-2 w-full">
-                <MaterialSymbolsAccountCircle className="w-[18px] mr-2" />
+                <MaterialSymbolsAccountCircle className="text-xl text-[#333333] mr-2" />
                 <Link
                   to="/profile"
                   onClick={() => {

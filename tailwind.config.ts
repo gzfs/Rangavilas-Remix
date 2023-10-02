@@ -6,6 +6,7 @@ export default {
     extend: {
       fontFamily: {
         Montserrat: "Montserrat",
+        Veshion: "Veshion",
       },
     },
   },

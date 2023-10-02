@@ -7,6 +7,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("first_name", "text", (c) => c.notNull())
     .addColumn("last_name", "text")
     .addColumn("phone", "text")
+    .addColumn("default_address_id", "text")
     .addColumn("email", "text", (c) => c.unique())
     .addColumn("is_admin", "boolean", (c) => c.notNull())
     .addColumn("image", "text")

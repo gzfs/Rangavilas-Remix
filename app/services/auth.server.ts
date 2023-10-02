@@ -41,6 +41,8 @@ remixAuthenticator.use(
               "User.last_name",
               "User.id",
               "User.image",
+              "User.phone",
+              "User.default_address_id",
             ])
             .executeTakeFirst()
         : existingProfile;
