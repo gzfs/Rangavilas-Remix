@@ -167,7 +167,6 @@ export default function Product() {
                     className="outline-none border border-[#333333] rounded-xl px-3 py-3 col-span-2"
                     onChange={(eV) => {
                       setCustomQuantity(eV.target.value);
-                      eV.target.value = "";
                     }}
                   />
                   <button
