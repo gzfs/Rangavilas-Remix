@@ -18,6 +18,7 @@ import stylesheet from "~/tailwind.css";
 import { remixAuthenticator } from "./services/auth.server";
 import Navbar from "./components/Navbar";
 import { type User } from "./database/types";
+import Footer from "./components/Footer";
 
 export async function loader(loaderArgs: LoaderFunctionArgs) {
   const userSession: User = (await remixAuthenticator.isAuthenticated(
@@ -52,6 +53,7 @@ export default function App() {
       <body>
         <Navbar userSession={loaderData.userSession} />
         <Outlet />
+        <Footer />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

@@ -7,6 +7,7 @@ export default {
       fontFamily: {
         Montserrat: "Montserrat",
         Veshion: "Veshion",
+        Outfit: "Outfit",
       },
     },
   },
