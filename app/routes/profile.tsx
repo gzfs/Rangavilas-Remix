@@ -235,13 +235,13 @@ export default function Profile() {
                     key={userAddress.id}
                     data-address={userAddress.id}
                     selected={
-                      loaderData.userDB.default_address_id
+                      loaderData.userDB?.default_address_id
                         ? loaderData.userDB.default_address_id ===
                           userAddress.id
                         : index === 0
                     }
                   >
-                    {formatAddresses(userAddress)}
+                    {userAddress && formatAddresses(userAddress)}
                   </option>
                 );
               })}
@@ -355,9 +355,10 @@ export default function Profile() {
             className="outline-none border border-[#333333] py-2.5 rounded-xl px-4 text-sm w-full"
             disabled={!loaderData.userDB && true}
             name="default-address"
-            defaultValue={formatAddresses(
-              loaderData.userAddresses[0]
-            )}
+            defaultValue={
+              loaderData.userAddresses[0] &&
+              formatAddresses(loaderData.userAddresses[0])
+            }
             onChange={(eV) => {
               setDeleteAddressID(
                 eV.target[eV.target.selectedIndex].getAttribute(
@@ -372,7 +373,7 @@ export default function Profile() {
                   key={userAddress.id}
                   data-address={userAddress.id}
                 >
-                  {formatAddresses(userAddress)}
+                  {userAddress && formatAddresses(userAddress)}
                 </option>
               );
             })}
