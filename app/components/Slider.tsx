@@ -54,11 +54,11 @@ export default function Slider({
   useEffect(() => {
     const autoPlayInterval = setInterval(() => {
       if (imageIndex < sliderImages.length - 1) {
+        if (triggerAction) triggerAction(sliderImages[imageIndex]);
         setImageIndex(imageIndex + 1);
-        if (triggerAction) triggerAction(sliderImages[imageIndex]);
       } else {
-        setImageIndex(0);
         if (triggerAction) triggerAction(sliderImages[imageIndex]);
+        setImageIndex(0);
       }
     }, 3000);
 

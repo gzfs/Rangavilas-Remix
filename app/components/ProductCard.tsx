@@ -57,7 +57,9 @@ export default function ProductCard({
   return (
     <div className="sm:w-[300px] lg:w-full w-[calc(100vw-5rem)] grid grid-rows-3 place-self-center rounded-2xl border gap-y-3 border-[#333333] overflow-hidden">
       <Link
-        to={`/${productData.category_name}/product/${productData.id}`}
+        to={`/${productData.category_name?.toLowerCase()}/product/${
+          productData.id
+        }`}
         className="h-[200px] row-span-5"
       >
         <div

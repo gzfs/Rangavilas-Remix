@@ -75,7 +75,7 @@ export type OutputElementType = {
   category_name: string | null;
 };
 
-function mergeUrls(
+export function mergeUrls(
   inputArray: InputElementType[]
 ): OutputElementType[] {
   const result: { [id: string]: OutputElementType } = {};

@@ -31,7 +31,7 @@ export default function Navbar({
 }) {
   const [showDropdown, setShowDropdown] = useState(false);
   return (
-    <div className="px-10 py-8 sticky shadow-xl flex justify-between font-Montserrat items-center text-[#333333] z-50">
+    <div className="px-5 sm:px-10 py-8 sticky shadow-xl flex justify-between font-Montserrat items-center text-[#333333] z-50">
       <Link to="/">
         <img
           src="/assets/images/Small-2.png"
