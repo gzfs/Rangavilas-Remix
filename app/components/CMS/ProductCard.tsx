@@ -88,9 +88,7 @@ export default function ProductCard({
         </button>
       </productDeleteFetcher.Form>
       <Link
-        to={`/${productData.category_name?.toLowerCase()}/product/${
-          productData.id
-        }`}
+        to={`/admin/products/${productData.id}`}
         className="h-[200px] row-span-5"
       >
         <div
