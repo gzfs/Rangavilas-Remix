@@ -221,6 +221,15 @@ export default function Profile() {
               className="outline-none border border-[#333333] py-2.5 rounded-xl px-4 text-sm w-full"
               disabled={!loaderData.userDB && true}
               name="default-address"
+              defaultValue={
+                formatAddresses(
+                  loaderData?.userAddresses?.find(
+                    (userAddress) =>
+                      userAddress?.id ===
+                      loaderData?.userDB?.default_address_id
+                  ) as Address
+                ) || ""
+              }
               onChange={(eV) => {
                 setDefaultAddressID(
                   eV.target[eV.target.selectedIndex].getAttribute(
@@ -234,12 +243,6 @@ export default function Profile() {
                   <option
                     key={userAddress.id}
                     data-address={userAddress.id}
-                    selected={
-                      loaderData.userDB?.default_address_id
-                        ? loaderData.userDB.default_address_id ===
-                          userAddress.id
-                        : index === 0
-                    }
                   >
                     {userAddress && formatAddresses(userAddress)}
                   </option>

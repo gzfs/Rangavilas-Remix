@@ -1,7 +1,7 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { tursoDB } from "~/services/db.server";
-import { mergeUrls } from "./_index";
+import { mergeUrls } from "../utils/helper.server";
 import Slider from "~/components/Slider";
 import { type SVGProps, useState } from "react";
 
@@ -10,16 +10,23 @@ export async function loader({ params }: LoaderFunctionArgs) {
     .selectFrom("Product")
     .where("Product.id", "=", params.product_id as string)
     .rightJoin("Category", "Category.id", "Product.category_id")
+    .rightJoin(
+      "KeywordProduct",
+      "KeywordProduct.product_id",
+      "Product.id"
+    )
+    .rightJoin("Keyword", "Keyword.id", "KeywordProduct.keyword_id")
     .rightJoin("Image", "Image.product_id", "Product.id")
     .select([
-      "Category.name as category_name",
       "Product.id",
-      "Product.description",
-      "Image.url",
       "Product.name",
       "Product.is_featured",
+      "Product.description",
       "Product.price",
       "Product.rating",
+      "Category.name as category_name",
+      "Image.url",
+      "Keyword.keyword",
     ])
     .execute();
 
@@ -64,25 +71,6 @@ export function MdiCheck(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function IcBaselineFavoriteBorder(
-  props: SVGProps<SVGSVGElement>
-) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="1em"
-      height="1em"
-      viewBox="0 0 24 24"
-      {...props}
-    >
-      <path
-        fill="currentColor"
-        d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3C4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5C22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1l-.1-.1C7.14 14.24 4 11.39 4 8.5C4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5c0 2.89-3.14 5.74-7.9 10.05z"
-      ></path>
-    </svg>
-  );
-}
-
 export default function Product() {
   const loaderData = useLoaderData<typeof loader>();
   const pageProduct = loaderData.pageProduct;
@@ -98,7 +86,7 @@ export default function Product() {
 
   return (
     <>
-      <section className="px-10 pt-10 grid md:grid-cols-2 grid-cols-1 gap-x-10 text-[#333333]">
+      <section className="px-10 pt-10 grid md:grid-cols-2 grid-cols-1 gap-x-10 text-[#333333] max-w-[1500px] mx-auto">
         <div className="grid gap-y-4 sm:gap-y-0">
           <Slider sliderImages={pageProduct.url} isRounded={true} />
           <div className="grid grid-cols-3 place-self-center sm:gap-x-2 gap-x-4">
@@ -116,10 +104,28 @@ export default function Product() {
             })}
           </div>
         </div>
-        <div className="font-Outfit sm:p-5 sm:py-0 py-10">
+        <div className="font-Outfit sm:p-5 sm:py-0 py-10 grid place-content-between w-full">
           <p>{pageProduct.category_name}</p>
-          <p className="text-6xl font-bold">{pageProduct.name}</p>
-          <p className="py-8">{pageProduct.description}</p>
+          <p className="text-6xl font-bold ml-[-3px]">
+            {pageProduct.name}
+          </p>
+          <div className="flex items-center w-fit mt-2">
+            {pageProduct.keyword.map((kw) => {
+              return (
+                <div
+                  className="flex items-center w-fit border px-2 py-1 border-red-700 rounded-lg mr-2 text-xs"
+                  key={kw}
+                >
+                  <div className="w-[5px] h-[5px] rounded-full bg-black"></div>
+                  <p className="ml-2">
+                    {kw.split("_")[0].slice(0, 1).toUpperCase() +
+                      kw.split("_")[0].slice(1)}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+          <p className="py-4">{pageProduct.description}</p>
           <div className="pb-5">
             <p className="font-Montserrat">MRP</p>
             <div className="flex justify-start items-center">
@@ -218,17 +224,43 @@ export default function Product() {
             <div className="w-[5px] h-[5px] rounded-full bg-red-700"></div>
             <p className="ml-2">Extra delivery fee will be added</p>
           </div>
-          <div className="grid grid-cols-6 gap-x-2">
-            <button className="text-center py-3 sm:col-span-3 col-span-5 w-full rounded-xl bg-[#3b4fc2] hover:bg-white hover:text-[#3b4fc2] border border-white hover:border-[#3b4fc2] transition-colors text-white flex justify-center items-center mt-8">
+          <div className="grid grid-cols-7 gap-x-2 h-fit place-items-center">
+            <div className="col-span-2 grid place-items-start w-full">
+              <p className="text-sm">TOTAL PRICE</p>
+              <p className="text-4xl font-bold">
+                ₹
+                {calculateTotalPrice(
+                  pageProduct.price as number,
+                  selectedQuantitySpec,
+                  selectedQuantity
+                )}
+              </p>
+            </div>
+            <button className="text-center col-span-5 w-full h-fit py-3.5 rounded-full bg-[#3b4fc2] hover:bg-white hover:text-[#3b4fc2] border border-white hover:border-[#3b4fc2] transition-colors text-white flex justify-center items-center">
               <IcBaselineShoppingCart />
               <span>Add to Cart</span>
-            </button>
-            <button className="text-center py-3 col-span-1 w-full rounded-xl hover:bg-[#F16F6F] bg-white text-[#F16F6F] border hover:border-white border-[#F16F6F] transition-colors hover:text-white flex justify-center items-center mt-8">
-              <IcBaselineFavoriteBorder />
             </button>
           </div>
         </div>
       </section>
     </>
   );
+}
+
+function calculateTotalPrice(
+  baseValue: number,
+  quantitySpec: string,
+  desiredQuantity: number | string
+) {
+  switch (quantitySpec) {
+    case "g":
+      const pricePerGram = baseValue / 1000;
+      return typeof desiredQuantity === "number"
+        ? desiredQuantity * pricePerGram
+        : 100 * pricePerGram;
+    case "kg":
+      return typeof desiredQuantity === "number"
+        ? desiredQuantity * baseValue
+        : 1 * baseValue;
+  }
 }

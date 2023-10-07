@@ -43,10 +43,24 @@ export type Category = {
   description: string;
 };
 
+export type Keyword = {
+  id: string;
+  keyword: string;
+  product_id?: string;
+};
+
+export type KeywordProduct = {
+  id: string;
+  keyword_id: string;
+  product_id: string;
+};
+
 export interface Database {
   User: User;
   Address: Address;
   Category: Category;
   Image: Image;
   Product: Product;
+  Keyword: Keyword;
+  KeywordProduct: KeywordProduct;
 }

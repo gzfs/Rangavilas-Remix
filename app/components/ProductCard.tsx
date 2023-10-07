@@ -1,7 +1,7 @@
 import { Link } from "@remix-run/react";
 import { type SVGProps, useState } from "react";
 import {} from "~/database/types";
-import { type OutputElementType } from "~/routes/_index";
+import { type OutputElementType } from "../utils/helper.server";
 
 export function MaterialSymbolsStarRounded(
   props: SVGProps<SVGSVGElement>

@@ -10,6 +10,10 @@ import Slider from "~/components/Slider";
 import { type User } from "~/database/types";
 import { remixAuthenticator } from "~/services/auth.server";
 import { tursoDB } from "~/services/db.server";
+import {
+  type OutputElementType,
+  mergeUrls,
+} from "~/utils/helper.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -33,6 +37,12 @@ export async function loader(loaderArgs: LoaderFunctionArgs) {
   const initalProducts = await tursoDB
     .selectFrom("Product")
     .rightJoin("Category", "Category.id", "Product.category_id")
+    .rightJoin(
+      "KeywordProduct",
+      "KeywordProduct.product_id",
+      "Product.id"
+    )
+    .rightJoin("Keyword", "Keyword.id", "KeywordProduct.keyword_id")
     .rightJoin("Image", "Image.product_id", "Product.id")
     .select([
       "Product.id",
@@ -43,6 +53,7 @@ export async function loader(loaderArgs: LoaderFunctionArgs) {
       "Product.rating",
       "Category.name as category_name",
       "Image.url",
+      "Keyword.keyword",
     ])
     .execute();
 
@@ -51,47 +62,6 @@ export async function loader(loaderArgs: LoaderFunctionArgs) {
     sliderImages,
     initalProducts: mergeUrls(initalProducts),
   });
-}
-
-type InputElementType = {
-  name: string | null;
-  description: string | null;
-  id: string | null;
-  rating: number | null;
-  price: number | null;
-  is_featured: boolean | null;
-  url: string;
-  category_name: string | null;
-};
-
-export type OutputElementType = {
-  name: string | null;
-  description: string | null;
-  id: string | null;
-  rating: number | null;
-  price: number | null;
-  is_featured: boolean | null;
-  url: string[];
-  category_name: string | null;
-};
-
-export function mergeUrls(
-  inputArray: InputElementType[]
-): OutputElementType[] {
-  const result: { [id: string]: OutputElementType } = {};
-
-  for (const item of inputArray) {
-    if (item.id != null) {
-      if (result[item.id]) {
-        result[item.id].url.push(item.url);
-      } else {
-        result[item.id] = { ...item, url: [item.url] };
-      }
-    }
-  }
-  const outputArray = Object.values(result);
-
-  return outputArray;
 }
 
 export default function Index() {
