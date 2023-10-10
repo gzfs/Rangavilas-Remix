@@ -45,8 +45,9 @@ export async function action({
     .execute();
 
   const newTags = formData.productTags
-    .filter((productTag: any) =>
-      productTags.find((pT) => pT.keyword_id !== productTag.id)
+    .filter(
+      (productTag: any) =>
+        !productTags.find((pT) => pT.keyword_id === productTag.id)
     )
     .map((kw: any) => {
       return {
@@ -72,8 +73,6 @@ export async function action({
     productTags,
     oldTags
   );
-
-  console.log(deletedTags);
 
   if (deletedTags) {
     deletedTags.forEach(async (deletedTag) => {
