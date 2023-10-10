@@ -27,12 +27,21 @@ export async function loader(loaderArgs: LoaderFunctionArgs) {
     loaderArgs.request
   )) as User;
 
-  const sliderImages = [
-    "https://images.unsplash.com/photo-1685825631222-6bfdc760d39c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1472&q=80",
-    "https://images.unsplash.com/photo-1695058866572-c9a3b558d089?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80",
-    "https://images.unsplash.com/photo-1695058866915-a2167e8fac65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80",
-    "https://images.unsplash.com/photo-1685346388921-26dd3ae934be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-  ];
+  const sliderImages = (
+    await tursoDB
+      .selectFrom("Image")
+      .select(["Image.url", "Image.category_id", "Image.product_id"])
+      .execute()
+  )
+    .filter((sliderImage) => {
+      return (
+        sliderImage.category_id === null &&
+        sliderImage.product_id === null
+      );
+    })
+    .map((sliderImage) => {
+      return sliderImage.url;
+    });
 
   const initalProducts = await tursoDB
     .selectFrom("Product")
@@ -57,15 +66,24 @@ export async function loader(loaderArgs: LoaderFunctionArgs) {
     ])
     .execute();
 
+  const productCategories = await tursoDB
+    .selectFrom("Category")
+    .rightJoin("Image", "Image.category_id", "Category.id")
+    .select(["Category.description", "Category.name", "Image.url"])
+    .where("Category.id", "!=", "Null")
+    .execute();
+
   return json({
     userSession,
     sliderImages,
     initalProducts: mergeUrls(initalProducts),
+    productCategories,
   });
 }
 
 export default function Index() {
   const loaderData = useLoaderData<typeof loader>();
+  console.log(loaderData.sliderImages);
 
   return (
     <>
@@ -74,7 +92,7 @@ export default function Index() {
         isRounded={false}
       />
       <section className="mx-auto max-w-[1000px] px-10">
-        <Categories />
+        <Categories prouctCategories={loaderData.productCategories} />
         <Products
           sectionName="Mixture"
           sectionDesc="We are also known for our Indian snacks, savories ( Farsan And Namkeen), Fast Foods, Chaats, Punjabi and South Indian cuisines and delicious Lassi"
