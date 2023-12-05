@@ -55,6 +55,20 @@ export type KeywordProduct = {
   product_id: string;
 };
 
+export type Cart = {
+  cart_id: string;
+  user_id: string;
+  product_id: string;
+  quantity: number;
+  gram_quantity: number;
+};
+
+export type OrderCart = {
+  id: string;
+  cart_id: string;
+  order_id?: string;
+};
+
 export interface Database {
   User: User;
   Address: Address;
@@ -63,4 +77,6 @@ export interface Database {
   Product: Product;
   Keyword: Keyword;
   KeywordProduct: KeywordProduct;
+  Cart: Cart;
+  OrderCart: OrderCart;
 }

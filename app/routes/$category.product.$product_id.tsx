@@ -1,5 +1,5 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { tursoDB } from "~/services/db.server";
 import { mergeUrls } from "../utils/helper.server";
 import Slider from "~/components/Slider";
@@ -10,11 +10,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     .selectFrom("Product")
     .where("Product.id", "=", params.product_id as string)
     .rightJoin("Category", "Category.id", "Product.category_id")
-    .rightJoin(
-      "KeywordProduct",
-      "KeywordProduct.product_id",
-      "Product.id"
-    )
+    .rightJoin("KeywordProduct", "KeywordProduct.product_id", "Product.id")
     .rightJoin("Keyword", "Keyword.id", "KeywordProduct.keyword_id")
     .rightJoin("Image", "Image.product_id", "Product.id")
     .select([
@@ -35,9 +31,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   });
 }
 
-export function IcBaselineShoppingCart(
-  props: SVGProps<SVGSVGElement>
-) {
+export function IcBaselineShoppingCart(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -74,15 +68,15 @@ export function MdiCheck(props: SVGProps<SVGSVGElement>) {
 export default function Product() {
   const loaderData = useLoaderData<typeof loader>();
   const pageProduct = loaderData.pageProduct;
-  const [quantitySpecVisible, setQuantitySpecVisible] =
-    useState(false);
+  const [quantitySpecVisible, setQuantitySpecVisible] = useState(false);
   const [quantityVisible, setQuantityVisible] = useState(false);
-  const [selectedQuantity, setselectedQuantity] = useState<
-    string | number
-  >("Quantity");
-  const [selectedQuantitySpec, setselectedQuantitySpec] =
-    useState("g");
+  const [selectedQuantity, setselectedQuantity] = useState<string | number>(
+    "Single Product Quantity"
+  );
+  const [selectedQuantitySpec, setselectedQuantitySpec] = useState("g");
   const [customQuantity, setCustomQuantity] = useState("");
+  const [groupQuant, setGroupQuant] = useState(1);
+  const addProductFetcher = useFetcher();
 
   return (
     <>
@@ -106,9 +100,7 @@ export default function Product() {
         </div>
         <div className="font-Outfit sm:p-5 sm:py-0 py-10 grid place-content-between w-full">
           <p>{pageProduct.category_name}</p>
-          <p className="text-6xl font-bold ml-[-3px]">
-            {pageProduct.name}
-          </p>
+          <p className="text-6xl font-bold ml-[-3px]">{pageProduct.name}</p>
           <div className="flex items-center w-fit mt-2">
             {pageProduct.keyword.map((kw) => {
               return (
@@ -129,13 +121,11 @@ export default function Product() {
           <div className="pb-5">
             <p className="font-Montserrat">MRP</p>
             <div className="flex justify-start items-center">
-              <p className="text-5xl font-bold">
-                ₹{pageProduct.price}
-              </p>
+              <p className="text-5xl font-bold">₹{pageProduct.price}</p>
               <p className="text-lg font-light ml-1">per kg</p>
             </div>
           </div>
-          <div className="font-Outfit font-light text-sm grid grid-cols-6 sm:w-8/12 gap-3">
+          <div className="font-Outfit font-light text-sm grid grid-cols-8 gap-3">
             <div className="relative flex flex-col col-span-4">
               <div
                 className="w-full py-3 cursor-pointer active:bg-[#F4ECEC] border border-[#333333]  rounded-xl text-center"
@@ -219,6 +209,16 @@ export default function Product() {
                 })}
               </div>
             </div>
+            <input
+              className="col-span-2 border border-[#333333] rounded-xl outline-none px-5"
+              defaultValue={groupQuant}
+              min={1}
+              onChange={(eV) => {
+                setGroupQuant(parseInt(eV.target.value));
+              }}
+              type="number"
+              placeholder="Quantity"
+            />
           </div>
           <div className="py-3 text-sm flex items-center justify-start">
             <div className="w-[5px] h-[5px] rounded-full bg-red-700"></div>
@@ -233,13 +233,37 @@ export default function Product() {
                   pageProduct.price as number,
                   selectedQuantitySpec,
                   selectedQuantity
-                )}
+                )! * groupQuant}
               </p>
             </div>
-            <button className="text-center col-span-5 w-full h-fit py-3.5 rounded-full bg-[#3b4fc2] hover:bg-white hover:text-[#3b4fc2] border border-white hover:border-[#3b4fc2] transition-colors text-white flex justify-center items-center">
-              <IcBaselineShoppingCart />
-              <span>Add to Cart</span>
-            </button>
+            <addProductFetcher.Form
+              action="/cart/product/add"
+              className="w-full col-span-5"
+              method="POST"
+              onSubmit={(eV) => {
+                eV.preventDefault();
+                if (pageProduct && typeof selectedQuantity == "number")
+                  addProductFetcher.submit(
+                    JSON.stringify({
+                      productID: pageProduct.id,
+                      productQuantity: groupQuant,
+                      gramQuantity: selectedQuantity,
+                      categoryName: pageProduct.category_name,
+                    }),
+                    {
+                      action: "/cart/product/add",
+                      encType: "application/json",
+                      method: "POST",
+                      preventScrollReset: true,
+                    }
+                  );
+              }}
+            >
+              <button className="text-center w-full h-fit py-3.5 rounded-full bg-[#3b4fc2] hover:bg-white hover:text-[#3b4fc2] border border-white hover:border-[#3b4fc2] transition-colors text-white flex justify-center items-center">
+                <IcBaselineShoppingCart />
+                <span>Add to Cart</span>
+              </button>
+            </addProductFetcher.Form>
           </div>
         </div>
       </section>
@@ -247,7 +271,7 @@ export default function Product() {
   );
 }
 
-function calculateTotalPrice(
+export function calculateTotalPrice(
   baseValue: number,
   quantitySpec: string,
   desiredQuantity: number | string

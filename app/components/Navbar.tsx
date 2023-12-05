@@ -4,10 +4,9 @@ import { LogOut, Search, Shield, ShoppingBasket } from "lucide-react";
 import { type SVGProps, useState } from "react";
 import { clsx } from "clsx";
 import { type User } from "~/database/types";
+import { useCartStore } from "~/store/cartStore";
 
-export function MaterialSymbolsAccountCircle(
-  props: SVGProps<SVGSVGElement>
-) {
+export function MaterialSymbolsAccountCircle(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -25,19 +24,18 @@ export function MaterialSymbolsAccountCircle(
 }
 
 export default function Navbar({
+  cartCount,
   userSession,
 }: {
+  cartCount: number;
   userSession: User;
 }) {
   const [showDropdown, setShowDropdown] = useState(false);
+  const cartIDValue = useCartStore((state) => state.existingCartID);
   return (
     <div className="px-5 sm:px-10 py-8 sticky shadow-xl flex justify-between font-Montserrat items-center text-[#333333] z-50">
       <Link to="/">
-        <img
-          src="/assets/images/Small-2.png"
-          alt="Logo"
-          width={150}
-        />
+        <img src="/assets/images/Small-2.png" alt="Logo" width={150} />
       </Link>
       <div className="flex items-center">
         <div>
@@ -50,15 +48,32 @@ export default function Navbar({
               <Search className="w-[20px] text-[#C1224F]" />
             </button>
             <a
-              href="/cart"
-              className="flex justify-center items-center  ml-5"
+              href={
+                cartIDValue && userSession.email
+                  ? `/cart?id=${cartIDValue}`
+                  : "/cart"
+              }
+              className="flex relative justify-center items-center  ml-5"
             >
-              <ShoppingBasket className="w-[20px] text-[#C1224F]" />
+              <p className="text-white text-xs px-1.5 flex items-center justify-center rounded-full absolute top-0 right-[-3px] bg-[#C1224F]">
+                {cartCount}
+              </p>
+              <ShoppingBasket className="w-[30px] text-[#C1224F]" />
             </a>
           </div>
           <div className="md:hidden flex justify-center items-center mr-5">
             <Search className="w-[20px] text-[#C1224F]" />
-            <a href="/cart">
+            <a
+              href={
+                cartIDValue && userSession.email
+                  ? `/cart?id=${cartIDValue}`
+                  : "/cart"
+              }
+              className="relative"
+            >
+              <p className="text-white text-xs px-1.5 flex items-center justify-center rounded-full absolute top-0 right-[-3px] bg-[#C1224F]">
+                {cartCount}
+              </p>
               <ShoppingBasket className="w-[20px] text-[#C1224F] ml-6" />
             </a>
           </div>
