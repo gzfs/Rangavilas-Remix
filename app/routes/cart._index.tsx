@@ -3,9 +3,24 @@ import { useLoaderData } from "@remix-run/react";
 import CartItem from "~/components/CartItem";
 import Checkout from "~/components/Checkout";
 import Heading from "~/components/Heading";
+import { User } from "~/database/types";
+import { remixAuthenticator } from "~/services/auth.server";
 import { tursoDB } from "~/services/db.server";
 
 export async function loader(loaderArgs: LoaderFunctionArgs) {
+  const userSession: User = (await remixAuthenticator.isAuthenticated(
+    loaderArgs.request,
+    {
+      failureRedirect: "/",
+    }
+  )) as User;
+
+  const userAddresses = await tursoDB
+    .selectFrom("Address")
+    .where("Address.user_id", "=", userSession.id)
+    .selectAll()
+    .execute();
+
   const cartID = new URL(loaderArgs.request.url).searchParams.get("id");
   let cartItems:
     | {
@@ -37,6 +52,7 @@ export async function loader(loaderArgs: LoaderFunctionArgs) {
   return json({
     cartID,
     cartItems,
+    userAddresses,
   });
 }
 
@@ -45,7 +61,7 @@ export default function Cart() {
 
   return (
     <>
-      <main className="max-w-[1000px] mx-auto">
+      <main className="max-w-[1000px] mx-auto px-2 sm:px-0">
         <Heading
           sectionDesc="Indulge Your Cravings: A Symphony of Sweets and Savories Awaits"
           sectionTitle="Cart"
@@ -69,7 +85,9 @@ export default function Cart() {
             : ""}
         </div>
       </main>
-      <Checkout />
+      <Checkout
+        userAddresses={JSON.parse(JSON.stringify(loaderData.userAddresses))}
+      />
     </>
   );
 }
