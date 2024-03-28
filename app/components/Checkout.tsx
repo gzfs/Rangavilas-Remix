@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Modal from "./Modal";
+import GooglePayButton from "@google-pay/button-react";
 
 export default function Checkout({
   userAddresses,
@@ -19,31 +20,86 @@ export default function Checkout({
   const [address, setAddress] = useState(userAddresses[0]);
   return (
     <>
-      <div className="px-5 sm:px-10 py-5 gap-y-2 bg-white flex flex-wrap justify-between fixed bottom-0 w-full shadow-[-10px_-10px_30px_4px_rgba(0,0,0,0.1),_10px_10px_30px_4px_rgba(45,78,255,0.15)]">
-        <div className="grid grid-cols-7 gap-2">
-          <div className="bg-[#DEDEDE] text-xs text-[#333333] col-span-5 w-full font-Montserrat rounded-3xl py-5 px-10">
-            <p className="font-bold">Shipping To: </p>
-            <p>{addressFormatter(address)}</p>
-          </div>
-          <button
-            className="grid place-items-center bg-[#DEDEDE] text-xs text-[#333333] col-span-2 w-full font-Montserrat rounded-3xl py-5 sm:px-10"
-            onClick={() => {
-              setModalState(true);
-            }}
-          >
-            Change Address
-          </button>
+      <div className="grid gap-y-5">
+        <div className="border text-[#333333] border-[#333333] col-span-1 rounded-3xl pt-5 px-5 pb-2 grid gap-y-2">
+          <p className="font-bold text-2xl">Order Summary</p>
+          <hr className="border-[#949393]" />
+          <p>
+            <span className="text-xs">Shipping To:</span>
+            <p className="flex">
+              <span className="text-xs">
+                {addressFormatter(JSON.parse(JSON.stringify(userAddresses[0])))}
+              </span>
+              <button
+                className="text-xs underline"
+                onClick={() => {
+                  setModalState(true);
+                }}
+              >
+                Change
+              </button>
+            </p>
+          </p>
+          <p className="flex justify-between pb-3  font-Montserrat font-medium">
+            <span>Total:</span>
+            <span>69$</span>
+          </p>
         </div>
-        <button className="bg-[#333333] flex justify-center items-center px-5 font-Montserrat font-bold text-white rounded-3xl w-full sm:w-fit h-[80px] ">
-          Checkout: 100₹
-        </button>
+        <div className="border text-[#333333] border-[#333333] col-span-1 rounded-3xl p-5 grid gap-y-4">
+          <p className="font-bold text-2xl">Payment</p>
+          <hr className="border-[#949393]" />
+          <GooglePayButton
+            className="w-full"
+            buttonColor="default"
+            buttonType="checkout"
+            buttonRadius={12}
+            buttonSizeMode="fill"
+            environment="TEST"
+            paymentRequest={{
+              apiVersion: 2,
+              apiVersionMinor: 0,
+              allowedPaymentMethods: [
+                {
+                  type: "CARD",
+                  parameters: {
+                    allowedAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
+                    allowedCardNetworks: ["MASTERCARD", "VISA"],
+                  },
+                  tokenizationSpecification: {
+                    type: "PAYMENT_GATEWAY",
+                    parameters: {
+                      gateway: "example",
+                      gatewayMerchantId: "exampleGatewayMerchantId",
+                    },
+                  },
+                },
+              ],
+              merchantInfo: {
+                merchantId: "12345678901234567890",
+                merchantName: "Demo Merchant",
+              },
+              transactionInfo: {
+                totalPriceStatus: "FINAL",
+                totalPriceLabel: "Total",
+                totalPrice: "1",
+                currencyCode: "USD",
+                countryCode: "US",
+              },
+            }}
+            onLoadPaymentData={(paymentRequest) => {
+              console.log("load payment data", paymentRequest);
+            }}
+          />
+        </div>
       </div>
       <Modal modalState={modalState} setModalState={setModalState}>
         <div className="p-3">
           {userAddresses.map((userAddress) => {
             return (
               <div className="flex font-Montserrat">
-                <p className="text-sm">{addressFormatter(userAddress)}</p>
+                <p className="text-sm">
+                  {addressFormatter(JSON.parse(JSON.stringify(userAddress)))}
+                </p>
                 <button
                   className="mx-1 px-4 rounded-2xl bg-[#dedede] text-xs"
                   disabled={userAddress.id === address.id}

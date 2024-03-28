@@ -58,7 +58,6 @@ export async function loader(loaderArgs: LoaderFunctionArgs) {
 
 export default function Cart() {
   const loaderData = useLoaderData<typeof loader>();
-
   return (
     <>
       <main className="max-w-[1000px] mx-auto px-2 sm:px-0">
@@ -66,28 +65,30 @@ export default function Cart() {
           sectionDesc="Indulge Your Cravings: A Symphony of Sweets and Savories Awaits"
           sectionTitle="Cart"
         />
-        <div className="grid gap-y-4">
-          {loaderData.cartItems && loaderData.cartID
-            ? mergeUrlsByProductName(loaderData.cartItems).map((cartItem) => {
-                return (
-                  <CartItem
-                    cart_id={loaderData.cartID as string}
-                    id={cartItem.id}
-                    gram_quantity={cartItem.gram_quantity}
-                    name={cartItem.name}
-                    price={cartItem.price}
-                    quantity={cartItem.quantity}
-                    url={cartItem.url[0]}
-                    key={cartItem.id}
-                  />
-                );
-              })
-            : ""}
+        <div className="grid sm:grid-cols-3 gap-y-4">
+          <div className="grid gap-y-4 col-span-2 place-self-start px-2">
+            {loaderData.cartItems && loaderData.cartID
+              ? mergeUrlsByProductName(loaderData.cartItems).map((cartItem) => {
+                  return (
+                    <CartItem
+                      cart_id={loaderData.cartID as string}
+                      id={cartItem.id}
+                      gram_quantity={cartItem.gram_quantity}
+                      name={cartItem.name}
+                      price={cartItem.price}
+                      quantity={cartItem.quantity}
+                      url={cartItem.url[0]}
+                      key={cartItem.id}
+                    />
+                  );
+                })
+              : ""}
+          </div>
+          <Checkout
+            userAddresses={JSON.parse(JSON.stringify(loaderData.userAddresses))}
+          />
         </div>
       </main>
-      <Checkout
-        userAddresses={JSON.parse(JSON.stringify(loaderData.userAddresses))}
-      />
     </>
   );
 }

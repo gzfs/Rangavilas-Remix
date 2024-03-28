@@ -12,6 +12,7 @@
     "migrate": "tsx ./app/database/migrate.ts"
   },
   "dependencies": {
+    "@google-pay/button-react": "^3.1.0",
     "@libsql/kysely-libsql": "^0.3.0",
     "@remix-run/css-bundle": "^2.0.1",
     "@remix-run/node": "^2.0.1",
