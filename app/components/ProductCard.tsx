@@ -3,9 +3,7 @@ import { type SVGProps, useState } from "react";
 import {} from "~/database/types";
 import { type OutputElementType } from "../utils/helper.server";
 
-export function MaterialSymbolsStarRounded(
-  props: SVGProps<SVGSVGElement>
-) {
+export function MaterialSymbolsStarRounded(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -22,9 +20,7 @@ export function MaterialSymbolsStarRounded(
   );
 }
 
-export function IcOutlineAddShoppingCart(
-  props: SVGProps<SVGSVGElement>
-) {
+export function IcOutlineAddShoppingCart(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -46,14 +42,12 @@ export default function ProductCard({
 }: {
   productData: OutputElementType;
 }) {
-  const [quantitySpecVisible, setQuantitySpecVisible] =
-    useState(false);
+  const [quantitySpecVisible, setQuantitySpecVisible] = useState(false);
   const [quantityVisible, setQuantityVisible] = useState(false);
-  const [selectedQuantity, setselectedQuantity] = useState<
-    string | number
-  >("Quantity");
-  const [selectedQuantitySpec, setselectedQuantitySpec] =
-    useState("g");
+  const [selectedQuantity, setselectedQuantity] = useState<string | number>(
+    "Quantity"
+  );
+  const [selectedQuantitySpec, setselectedQuantitySpec] = useState("g");
   return (
     <div className="sm:w-[300px] lg:w-full w-[calc(100vw-5rem)] grid grid-rows-3 place-self-center rounded-2xl border gap-y-3 border-[#333333] overflow-hidden">
       <Link
@@ -79,90 +73,25 @@ export default function ProductCard({
           {[1, 2, 3, 4, 5].map((numVal) => (
             <MaterialSymbolsStarRounded key={numVal} />
           ))}
-          <span className="text-base mt-[2px] ml-2">
-            {productData.rating}
-          </span>
+          <span className="text-base mt-[2px] ml-2">{productData.rating}</span>
         </p>
       </div>
-      <div className="font-Outfit px-5 font-light text-sm pb-3 grid grid-cols-4">
-        <div className="relative flex flex-col col-span-2 ">
-          <div
-            className="w-full py-2.5 cursor-pointer active:bg-[#F4ECEC] border border-[#333333]  rounded-xl text-center"
-            onClick={() => {
-              setQuantityVisible(!quantityVisible);
-              setQuantitySpecVisible(false);
-            }}
-          >
-            {selectedQuantity}
-          </div>
-          <div
-            className="absolute border border-[#333333] bg-white w-full rounded-xl top-[120%] fade-in"
-            style={{
-              display: quantityVisible ? "block" : "none",
-            }}
-          >
-            {[100, 200].map((desiredQuant) => {
-              return (
-                <div
-                  className="px-6 py-2.5 cursor-pointer active:bg-[#F4ECEC]  w-full text-center rounded-xl"
-                  key={desiredQuant}
-                  onClick={() => {
-                    setselectedQuantity(desiredQuant);
-                    setQuantityVisible(false);
-                  }}
-                >
-                  {desiredQuant}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div className="relative flex flex-col col-span-1">
-          <div
-            className="px-6 h-full py-2 ml-2 cursor-pointer active:bg-[#F4ECEC] border border-[#333333] w-fit rounded-xl"
-            onClick={() => {
-              setQuantitySpecVisible(!quantitySpecVisible);
-              setQuantityVisible(false);
-            }}
-          >
-            {selectedQuantitySpec}
-          </div>
-          <div
-            className="absolute border border-[#333333] bg-white rounded-xl top-[120%] ml-2 fade-in"
-            style={{
-              display: quantitySpecVisible ? "block" : "none",
-            }}
-          >
-            {["g", "kg"].map((desiredQuant) => {
-              return (
-                <div
-                  className="px-7 py-2.5 cursor-pointer active:bg-[#F4ECEC] text-center rounded-xl"
-                  key={desiredQuant}
-                  onClick={() => {
-                    setselectedQuantitySpec(desiredQuant);
-                    setQuantitySpecVisible(false);
-                  }}
-                >
-                  {desiredQuant}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+      <div className="font-Outfit px-5 font-light text-sm pb-3 grid grid-cols-4"></div>
       <hr className="border-[#333333]" />
       <div className="flex justify-between items-center font-Outfit pb-5 py-3 px-5">
         <p className="text-2xl font-bold font-Montserrat text-[#333333]">
           {" "}
           ₹{productData.price}
         </p>
-        <button
+        <Link
+          to={`/${productData.category_name?.toLowerCase()}/product/${
+            productData.id
+          }`}
           className="text-center py-3 px-7 rounded-xl text-sm bg-[#F16F6F] text-white w-fit flex justify-between items-center"
-          onClick={async () => {}}
         >
           <IcOutlineAddShoppingCart className="text-xl mr-3" />
-          <span>Add to Cart</span>
-        </button>
+          <span>Shop</span>
+        </Link>
       </div>
     </div>
   );

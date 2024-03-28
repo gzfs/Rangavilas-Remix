@@ -1,6 +1,6 @@
 import Heading from "./Heading";
 import ProductCard from "./ProductCard";
-import { type OutputElementType } from "~/routes/_index";
+import { type OutputElementType } from "~/utils/helper.server";
 
 export default function Products({
   hydrateProducts,

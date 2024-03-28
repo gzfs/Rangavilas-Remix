@@ -53,6 +53,7 @@ export async function loader(loaderArgs: LoaderFunctionArgs) {
       "Product.price",
       "Product.rating",
       "Category.name as category_name",
+      "Category.description as category_description",
       "Image.url",
       "Keyword.keyword",
     ])

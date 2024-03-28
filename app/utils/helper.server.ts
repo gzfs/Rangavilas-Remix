@@ -6,6 +6,7 @@ type InputElementType = {
   price: number | null;
   is_featured: boolean | null;
   url: string;
+  category_description: string | null;
   category_name: string | null;
   keyword: string | null;
 };
@@ -17,6 +18,7 @@ export type OutputElementType = {
   rating: number | null;
   price: number | null;
   is_featured: boolean | null;
+  category_description: string | null;
   url: string[];
   category_name: string | null;
   keyword: string[];
