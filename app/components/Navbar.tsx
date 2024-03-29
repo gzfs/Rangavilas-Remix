@@ -49,7 +49,7 @@ export default function Navbar({
             </button>
             <a
               href={
-                cartIDValue && userSession.email
+                cartIDValue && userSession
                   ? `/cart?id=${cartIDValue}`
                   : "/cart"
               }
@@ -65,7 +65,7 @@ export default function Navbar({
             <Search className="w-[20px] text-[#C1224F]" />
             <a
               href={
-                cartIDValue && userSession.email
+                cartIDValue && userSession
                   ? `/cart?id=${cartIDValue}`
                   : "/cart"
               }
